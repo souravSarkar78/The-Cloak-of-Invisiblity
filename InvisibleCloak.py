@@ -30,7 +30,7 @@ def filter_mask(mask):
 width = int(cap.get(3))
 height = int(cap.get(4))
 
-fourcc = cv2.VideoWriter_fourcc(*'XVID')
+
 
 while cap.isOpened():
     ret, frame = cap.read()  # Capture every frame
