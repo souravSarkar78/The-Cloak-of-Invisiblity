@@ -5,14 +5,15 @@ import numpy as np
 cap = cv2.VideoCapture(0)
 
 # Store a single frame as background 
+_, background = cap.read()
+# Giving two second time delay between two frames to adjust the auto exposure of camera  
 time.sleep(2)
 _, background = cap.read()
-
 
 #define all the kernels size  
 open_kernel = np.ones((5,5),np.uint8)
 close_kernel = np.ones((5,5),np.uint8)
-dialation_kernel = np.ones((10, 10), np.uint8)
+dilation_kernel = np.ones((10, 10), np.uint8)
 
 # Function for remove noise from mask 
 def filter_mask(mask):
@@ -21,12 +22,15 @@ def filter_mask(mask):
 
     open_mask = cv2.morphologyEx(close_mask, cv2.MORPH_OPEN, open_kernel)
 
-    dialation = cv2.dilate(open_mask, dialation_kernel, iterations= 1)
+    dilation = cv2.dilate(open_mask, dilation_kernel, iterations= 1)
 
-    return dialation
+    return dilation
 
 
+width = int(cap.get(3))
+height = int(cap.get(4))
 
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
 
 while cap.isOpened():
     ret, frame = cap.read()  # Capture every frame
@@ -35,7 +39,7 @@ while cap.isOpened():
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
     # lower bound and upper bound for Green color 
-    lower_bound = np.array([50, 60, 0])     
+    lower_bound = np.array([50, 80, 50])     
     upper_bound = np.array([90, 255, 255])
     # Check this website to know more about how to find upper and lower bound of a colour
     # https://realpython.com/python-opencv-color-spaces/  
@@ -60,11 +64,16 @@ while cap.isOpened():
     # Combine cloak region and current_background region to get final frame 
     combined = cv2.add(cloak, current_background)
 
-
     # Finally show the output frame
     cv2.imshow("cloak", combined)
     if cv2.waitKey(1) == ord('q'):
         cap.release()
+
+    elif cv2.waitKey(1) == ord('p'):
+        cv2.imwrite("background.png", background)
+        cap.release()
+
+
 
 cv2.destroyAllWindows()
 
