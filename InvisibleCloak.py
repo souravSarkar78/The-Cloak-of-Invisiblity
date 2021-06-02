@@ -30,6 +30,8 @@ def filter_mask(mask):
 width = int(cap.get(3))
 height = int(cap.get(4))
 
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
+# out = cv2.VideoWriter('output.avi', fourcc, 20.0, (width, height))   # Uncomment if you want to recorn videframes
 
 
 while cap.isOpened():
@@ -64,6 +66,9 @@ while cap.isOpened():
     # Combine cloak region and current_background region to get final frame 
     combined = cv2.add(cloak, current_background)
 
+    # out.write(combined) # Uncomment if you want to recorn videframes
+
+
     # Finally show the output frame
     cv2.imshow("cloak", combined)
     if cv2.waitKey(1) == ord('q'):
@@ -74,6 +79,6 @@ while cap.isOpened():
         cap.release()
 
 
-
+# out.release() # Uncomment if you want to recorn videframes
 cv2.destroyAllWindows()
 
